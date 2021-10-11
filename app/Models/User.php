@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Note::class,'author_id');
     }
+
+    public function isAuthorOf(Note $note): bool
+    {
+        return $this->id === $note->author_id;
+    }
 }
