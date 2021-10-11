@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 
 class NoteTest extends TestCase
 {
-    use RefreshDatabase,WithFaker;
+    use RefreshDatabase, WithFaker;
 
     public function test_a_user_can_create_a_note()
     {
@@ -109,15 +109,26 @@ class NoteTest extends TestCase
         $this->assertNotSame($note->note, $noteData['note']);
     }
 
-    public function test_a_user_can_see_all_its_own_notes()
+    public function test_a_user_can_see_all_its_own_notes_with_pagination()
     {
-        $user = User::factory()->hasNotes(3)->create();
-        $anotherUser = User::factory()->hasNotes(3)->create();
+        $user = User::factory()->hasNotes(2)->create();
+        $anotherUser = User::factory()->hasNotes(2)->create();
 
         Sanctum::actingAs($user);
 
-        $this->getJson(route('note.index'))->dump();
-
-
+        $this->getJson(route('note.index'))->dump()
+            ->assertJsonFragment([
+                'title' => $user->notes()->first()->title,
+                'note' => $user->notes()->first()->note,
+            ])->assertJsonFragment([
+                'title' => $user->notes()->get()->last()->title,
+                'note' => $user->notes()->get()->last()->note,
+            ])->assertJsonMissing([
+                'title' => $anotherUser->notes()->first()->title,
+                'note' => $anotherUser->notes()->first()->note,
+            ])->assertJsonMissing([
+                'title' => $anotherUser->notes()->get()->last()->title,
+                'note' => $anotherUser->notes()->get()->last()->note,
+            ]);
     }
 }
