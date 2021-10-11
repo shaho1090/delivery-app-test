@@ -22,4 +22,12 @@ Route::middleware('auth:sanctum')->prefix('/note')->group(function () {
 
     Route::get('/index', [MyNoteController::class, 'index'])
         ->name('note.index');
+
+    Route::get('/show/{note}', [MyNoteController::class, 'show'])
+        ->name('note.show')
+        ->middleware('can:view,note');
+
+    Route::delete('/delete/{note}', [MyNoteController::class, 'destroy'])
+        ->name('note.delete')
+        ->middleware('can:delete,note');
 });
