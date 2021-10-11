@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MyNoteController;
 use Illuminate\Support\Facades\Route;
 
 
