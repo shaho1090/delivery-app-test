@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\Note;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 
 class NoteTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase,WithFaker;
 
     public function test_a_user_can_create_a_note()
     {
@@ -44,18 +44,80 @@ class NoteTest extends TestCase
 
     }
 
-    public function test_a_user_can_update_a_title_of_a_note()
+    public function test_a_user_can_update_the_title_of_a_note()
     {
         $user = User::factory()->hasNotes(3)->create();
 
         Sanctum::actingAs($user);
 
-        $noteData =[
+        $noteData = [
             'title' => 'another title for the note'
         ];
 
-        $this->patchJson(route('note.update',$user->first()->id),$noteData)->dump();
+        $note = $user->notes()->first();
 
-        $this->assertSame( $user->first()->title, $noteData['title']);
+        $this->patchJson(route('note.update', $note), $noteData)
+            ->assertStatus(200);
+
+        $note->refresh();
+
+        $this->assertSame($note->title, $noteData['title']);
+    }
+
+
+    public function test_a_user_can_update_the_text_of_a_note()
+    {
+        $user = User::factory()->hasNotes(3)->create();
+
+        Sanctum::actingAs($user);
+
+        $noteData = [
+            'note' => $this->faker->text
+        ];
+
+        $note = $user->notes()->first();
+
+        $this->patchJson(route('note.update', $note), $noteData)
+            ->assertStatus(200);
+
+        $note->refresh();
+
+        $this->assertSame($note->note, $noteData['note']);
+    }
+
+    public function test_a_user_can_not_update_note_of_others()
+    {
+        $user = User::factory()->hasNotes(3)->create();
+        $anotherUser = User::factory()->hasNotes(3)->create();
+
+        Sanctum::actingAs($anotherUser);
+
+        $noteData = [
+            'title' => $this->faker->sentence,
+            'note' => $this->faker->text
+        ];
+
+        $note = $user->notes()->first();
+
+        $this->patchJson(route('note.update', $note), $noteData)
+            ->assertForbidden()
+            ->assertStatus(403);
+
+        $note->refresh();
+
+        $this->assertNotSame($note->title, $noteData['title']);
+        $this->assertNotSame($note->note, $noteData['note']);
+    }
+
+    public function test_a_user_can_see_all_its_own_notes()
+    {
+        $user = User::factory()->hasNotes(3)->create();
+        $anotherUser = User::factory()->hasNotes(3)->create();
+
+        Sanctum::actingAs($user);
+
+        $this->getJson(route('note.index'))->dump();
+
+
     }
 }
