@@ -30,7 +30,7 @@ class NotePolicy
      */
     public function view(User $user, Note $note)
     {
-        //
+        return $user->isAuthorOf($note);
     }
 
     /**
@@ -65,7 +65,7 @@ class NotePolicy
      */
     public function delete(User $user, Note $note)
     {
-        //
+        return $user->isAuthorOf($note);
     }
 
     /**
