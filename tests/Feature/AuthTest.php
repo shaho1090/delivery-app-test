@@ -35,14 +35,12 @@ class AuthTest extends TestCase
             ->assertJsonFragment([
                 'name' => $this->registerData['name'],
                 'email' => $this->registerData['email']
-            ]);
-
-        $this->assertAuthenticated();
+            ])->assertStatus(200);
     }
 
     public function test_user_can_login_and_get_token()
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'password' => Hash::make($this->registerData['password']),
             'email' => $this->registerData['email']
         ]);
@@ -50,8 +48,6 @@ class AuthTest extends TestCase
         $this->postJson(route('login'), [
             'email' => $this->registerData['email'],
             'password' => $this->registerData['password']
-        ]);
-
-        $this->assertAuthenticated();
+        ])->assertStatus(200)->assertSee('token');
     }
 }
