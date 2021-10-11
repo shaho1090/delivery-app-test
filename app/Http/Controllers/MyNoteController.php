@@ -47,4 +47,24 @@ class MyNoteController extends Controller
             'data' => new NoteResource($note)
         ]);
     }
+
+    public function show(Note $note): JsonResponse
+    {
+        return Response::json([
+            'data' => new NoteResource($note)
+        ]);
+    }
+
+    /**
+     * @param Note $note
+     * @return JsonResponse
+     */
+    public function destroy(Note $note): JsonResponse
+    {
+        $note->delete();
+
+        return Response::json([
+            'data' => 'The note has been successfully deleted!'
+        ]);
+    }
 }
