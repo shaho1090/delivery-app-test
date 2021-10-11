@@ -25,7 +25,7 @@ class NoteTest extends TestCase
            'note' => 'this is simple note'
        ];
 
-       $this->postJson(route('create-note'),$noteData)->dump();
-       
+       $this->postJson(route('note.store'),$noteData)->dump();
+
    }
 }
