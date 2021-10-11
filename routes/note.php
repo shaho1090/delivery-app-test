@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->prefix('/note')->group(function (){
+Route::middleware('auth:sanctum')->prefix('/note')->group(function () {
     Route::post('/store', [MyNoteController::class, 'store'])
         ->name('note.store');
+
+    Route::patch('/{note}/update', [MyNoteController::class, 'update'])
+        ->name('note.update')
+        ->middleware('can:update,note');
 });
