@@ -11,7 +11,7 @@ class NoteStoreRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize() : bool
     {
         return true;
     }
@@ -24,8 +24,8 @@ class NoteStoreRequest extends FormRequest
     public function rules() : array
     {
         return [
-            'title' => ['require', 'string', 'min:3','max:255'],
-            'note' => ['require', 'min:3', 'max:10000']
+            'title' => ['required', 'string', 'min:3','max:255'],
+            'note' => ['required', 'min:3', 'max:1000']
         ];
     }
 }

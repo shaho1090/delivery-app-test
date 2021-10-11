@@ -27,5 +27,11 @@ class NoteTest extends TestCase
 
        $this->postJson(route('note.store'),$noteData)->dump();
 
+       $this->assertDatabaseHas('notes',[
+           'author_id' => $user->id,
+           'title' => $noteData['title'],
+           'note' => $noteData['note']
+       ]);
+
    }
 }
