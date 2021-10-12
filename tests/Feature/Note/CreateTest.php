@@ -31,10 +31,6 @@ class CreateTest extends TestCase
             ->assertJsonFragment([
                 'title' => $noteData['title'],
                 'note' => $noteData['note']
-            ])->assertJsonFragment([
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email
             ]);
 
         $this->assertDatabaseHas('notes', [
